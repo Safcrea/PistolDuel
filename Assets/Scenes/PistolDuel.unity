@@ -482,7 +482,7 @@ MonoBehaviour:
   playerBulletSpeed: 25
   playerFireCooldown: 0.34
   playerRecoilForce: 4.1
-  playerStartingRicochets: 4
+  playerStartingRicochets: 2
   playerInvulnerabilityDuration: 0.22
   killsPerUpgrade: 6
   enemyBaseHealth: 1
@@ -497,6 +497,14 @@ MonoBehaviour:
   enemyMinimumFireDelayMultiplier: 0.55
   enemyRecoilForce: 2.6
   enemyRecoilIncreasePerWave: 0.025
+  playerBulletVisualSize: 0.65
+  enemyBulletVisualSize: 0.65
+  playerBulletHitboxRadius: 0.065
+  enemyBulletHitboxRadius: 0.065
+  enableAimLockSlowMotion: 0
+  aimLockTimeScale: 0.35
+  aimLockDuration: 0.45
+  aimLockCooldown: 1.2
   initialEnemyCount: 2
   maximumEnemiesPerWave: 5
   wavesPerExtraEnemy: 2

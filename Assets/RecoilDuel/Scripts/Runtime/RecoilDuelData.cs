@@ -39,6 +39,84 @@ namespace RecoilDuel
         Special
     }
 
+    public enum WeaponMode
+    {
+        Standard,
+        ShotgunBlast,
+        RicochetCannon,
+        RevolverEvolution
+    }
+
+    public enum EnemyWeaponPattern
+    {
+        Single,
+        Burst,
+        Shotgun,
+        AlternatingHeavy,
+        Sniper
+    }
+
+    public enum PlayerChassisId
+    {
+        Standard,
+        ReinforcedDualBarrel,
+        RevolverFrame,
+        CompactSmg,
+        HeavyShotgun,
+        OverchargedRail
+    }
+
+    public enum EnemyArchetypeId
+    {
+        Standard,
+        Compact,
+        Heavy,
+        Revolver,
+        Smg,
+        Shotgun,
+        ArmoredElite,
+        SniperElite
+    }
+
+    public enum BulletArtId
+    {
+        PlayerStandard,
+        EnemyStandard,
+        Heavy,
+        Piercing,
+        Explosive,
+        Ricochet,
+        Sniper
+    }
+
+    public enum AttachmentArtId
+    {
+        RapidFire,
+        DoubleShot,
+        Piercing,
+        HeavyBullet
+    }
+
+    public enum PowerupId
+    {
+        RapidFire,
+        DoubleShot,
+        PiercingBullet,
+        ExplosiveBullet,
+        ExtraBounce,
+        SlowMotion,
+        Shield,
+        RepairKit,
+        Confusion,
+        EnemyFreeze,
+        Shockwave,
+        PowerupMagnet,
+        HeavyBullet,
+        ShotgunBlast,
+        RicochetCannon,
+        RevolverEvolution
+    }
+
     public readonly struct DamageInfo
     {
         public readonly float Damage;
@@ -76,7 +154,7 @@ namespace RecoilDuel
         public float speed = 26f;
         public float damage = 1f;
         public float knockback = 1f;
-        public int maxRicochets = 4;
+        public int maxRicochets = ProjectileRules.DefaultWallBounces;
         public int penetration = 0;
         public float lifetime = 4.5f;
         public float bounceRetention = 0.96f;
@@ -84,6 +162,10 @@ namespace RecoilDuel
         public float visualScale = 1f;
         public float shockForce;
         public bool splitOnFirstRicochet;
+        public bool explosive;
+        public float explosionRadius = 1.35f;
+        public float explosionDamageMultiplier = 0.65f;
+        public BulletArtId artId;
     }
 
     [CreateAssetMenu(menuName = "Recoil Duel/Enemy Archetype")]
@@ -98,6 +180,19 @@ namespace RecoilDuel
         public float requiredAimDot = 0.9f;
         public float predictionStrength = 0.15f;
         public float repositionShotChance = 0.2f;
+        public EnemyArchetypeId archetypeId;
+        public int unlockWave = 1;
+        public float healthMultiplier = 1f;
+        public int shieldHits;
+        public EnemyWeaponPattern weaponPattern;
+        public int burstCount = 1;
+        public float burstSpacing = 0.1f;
+        public int pelletCount = 1;
+        public float spreadDegrees;
+        public float telegraphDuration;
+        public float bulletDamageMultiplier = 1f;
+        public float bulletSpeedMultiplier = 1f;
+        public float recoilMultiplier = 1f;
     }
 
     [CreateAssetMenu(menuName = "Recoil Duel/Upgrade Data")]
@@ -109,6 +204,7 @@ namespace RecoilDuel
         public int maxStacks = 3;
         public float valuePerStack = 0.18f;
         public Sprite icon;
+        public PowerupId powerupId;
     }
 
     [CreateAssetMenu(menuName = "Recoil Duel/Major Drop Timing")]
@@ -181,6 +277,57 @@ namespace RecoilDuel
         public static int GetEnemyCountForWave(int wave)
         {
             return Mathf.Clamp(2 + Mathf.Max(0, wave - 1) / 2, 2, 5);
+        }
+
+        public static int GetPlayerChassisIndex(int enemyKills, int killsPerUpgrade = 6)
+        {
+            return Mathf.Clamp(GetUpgradeTier(enemyKills, killsPerUpgrade), 0, 5);
+        }
+
+        public static int GetUnlockedEnemyArchetypeCount(int wave)
+        {
+            int[] unlockWaves = { 1, 2, 4, 5, 7, 9, 12, 14 };
+            int unlocked = 0;
+            for (int i = 0; i < unlockWaves.Length; i++)
+            {
+                if (Mathf.Max(1, wave) >= unlockWaves[i])
+                {
+                    unlocked++;
+                }
+            }
+
+            return unlocked;
+        }
+    }
+
+    public static class ProjectileRules
+    {
+        public const int DefaultWallBounces = 2;
+        public const int MaximumPlayerWallBounces = 6;
+
+        public static bool ConsumeWallBounce(ref int bouncesRemaining)
+        {
+            bouncesRemaining--;
+            return bouncesRemaining < 0;
+        }
+
+        public static int GetPlayerBounceLimit(int extraBounceStacks)
+        {
+            return GetPlayerBounceLimit(DefaultWallBounces, extraBounceStacks);
+        }
+
+        public static int GetPlayerBounceLimit(int startingBounces, int extraBounceStacks)
+        {
+            return Mathf.Clamp(Mathf.Clamp(startingBounces, 0, DefaultWallBounces) + Mathf.Max(0, extraBounceStacks), 0, MaximumPlayerWallBounces);
+        }
+    }
+
+    public static class AimLockRules
+    {
+        public static bool IsOpposingCombatTeam(TeamId sourceTeam, TeamId targetTeam)
+        {
+            return (sourceTeam == TeamId.Player && targetTeam == TeamId.Enemy)
+                || (sourceTeam == TeamId.Enemy && targetTeam == TeamId.Player);
         }
     }
 }

@@ -3,5 +3,6 @@
   <Project Path="RecoilDuel.Runtime.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="RecoilDuel.Editor.csproj" />
+  <Project Path="RecoilDuel.Tests.PlayMode.csproj" />
   <Project Path="RecoilDuel.Tests.EditMode.csproj" />
 </Solution>

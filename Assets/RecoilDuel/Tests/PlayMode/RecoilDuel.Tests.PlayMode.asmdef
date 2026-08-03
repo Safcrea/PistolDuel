@@ -1,0 +1,21 @@
+{
+    "name": "RecoilDuel.Tests.PlayMode",
+    "rootNamespace": "RecoilDuel.Tests",
+    "references": [
+        "RecoilDuel.Runtime",
+        "UnityEngine.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
